@@ -17,7 +17,11 @@ if ENV_MODE == 'local':
         os.environ.update(json_env)
 elif ENV_MODE == 'production':
     secrets = get_secret()
-    os.environ.update(secrets)
+    if isinstance(secrets, dict):
+        for key, value in secrets.items():
+            os.environ[key] = str(value)  # Safely update the environment
+    else:
+        raise ValueError("Secrets must be a dictionary")
 
 AWS_ACCESS_KEY = env('AWS_ACCESS_KEY')
 AWS_SECRET_KEY = env('AWS_SECRET_KEY')
